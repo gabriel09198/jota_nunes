@@ -41,13 +41,14 @@ export default function LoginPage() {
           <input
             type="text"
             placeholder="Usuário"
-            className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border px-4 py-2 text-center text-black focus:border-blue-500 focus:outline-none placeholder:text-black"
             required
           />
+
           <input
             type="password"
             placeholder="Senha"
-            className="w-full rounded-lg border px-4 py-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-lg border px-4 py-2 text-center text-black focus:border-blue-500 focus:outline-none placeholder:text-black"
             required
           />
           <button
@@ -56,6 +57,16 @@ export default function LoginPage() {
           >
             Entrar
           </button>
+          {/* Link de criar conta */}
+          <p className="text-center text-sm text-gray-600">
+            Não tem conta?{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:underline font-medium cursor-pointer"
+            >
+              Criar conta
+            </a>
+          </p>
         </form>
       </div>
     </div>
