@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 
 // Importa carrossel dinamicamente (evita SSR)
-const SwiperComponent = dynamic(() => import("../componente/Carrousel"), {
+const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
   ssr: false,
 });
 
@@ -30,7 +30,7 @@ export default function LoginPage() {
               />
             </div>
             <h1 className="text-2xl font-semibold text-center text-gray-800">
-              Bem-vindo de volta!
+              Bem-vindo!
             </h1>
             <p className="text-center text-gray-500 mb-8">
               Insira suas credenciais para continuar
@@ -44,44 +44,34 @@ export default function LoginPage() {
               }}
               className="space-y-4"
             >
-              <div>
+              <div className="w-80 center mx-auto">
                 <label className="block text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
-                  className="w-full border text-black rounded-lg px-4 py-2 focus:border-red-500 focus:outline-none"
+                  className="w-80 border mx-auto block text-left text-black rounded-lg px-4 py-2 focus:border-red-500 focus:outline-none"
                   placeholder="Digite seu email"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-black mb-1">Senha</label>
+              <div className="w-80 center mx-auto">
+                <label className="block text-black mb-1 text-left ">Senha</label>
                 <input
                   type="password"
-                  className="w-full border text-black rounded-lg px-4 py-2 focus:border-red-500 focus:outline-none"
+                  className="w-80 border mx-auto block text-black text-left rounded-lg px-2 py-2 focus:border-red-500 focus:outline-none"
                   placeholder="Digite sua senha"
                   required
                 />
               </div>
 
-              {/* Opções */}
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4" /> Lembrar-me
-                </label>
-                <a href="#" className="text-red-600 hover:underline">
-                  Esqueci a senha?
-                </a>
-              </div>
-
               {/* Botão */}
               <button
                 type="submit"
-                className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex justify-center items-center gap-2"
+                className="w-80 mx-auto block bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex justify-center items-center gap-2"
               >
                 Entrar →
               </button>
 
-              <p className="text-center text-xs text-gray-500 mt-3">
+              <p className="w-80 text-center mx-auto block text-xs text-gray-500 mt-3">
                 Ao continuar, você concorda com os{" "}
                 <a href="#" className="text-red-600 hover:underline">
                   Termos de Uso
@@ -89,12 +79,6 @@ export default function LoginPage() {
                 e{" "}
                 <a href="#" className="text-red-600 hover:underline">
                   Política de Privacidade
-                </a>
-              </p>
-              <p className="text-center text-sm mt-3 text-black">
-                Não tem conta?{" "}
-                <a href="#" className="text-red-600 hover:underline">
-                  Criar conta
                 </a>
               </p>
             </form>
