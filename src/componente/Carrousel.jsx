@@ -10,13 +10,11 @@ export default function Carousel() {
   const slides = [
     {
       img: "/imagens/img1.png",
-      size: "w-[500px] h-[500px]",
-      link: "https://meusite.com/pagina1", // 🔗 link do slide 1
+      size: "w-[500px] h-[500px]"
     },
     {
       img: "/imagens/img2.png",
-      size: "w-[500px] h-[500px]",
-      link: "https://meusite.com/pagina2", // 🔗 link do slide 2
+      size: "w-[500px] h-[500px]"
     },
   ];
 
@@ -45,12 +43,12 @@ export default function Carousel() {
             <p className="text-base text-gray-100">{slide.text}</p>
 
             {/* Rodapé com ícone + link */}
-            <div className="absolute bottom-20 left-20 flex items-center space-x-1">
+            <div className="absolute bottom-17 left-20 flex items-center space-x-1">
               <a href="https://instagram.com/jotanunesconstrutora" target="_blank" rel="noopener noreferrer">
                 <img
-                  src="/imagens/img3.png"
+                  src="/imagens/img_insta.png"
                   alt="Instagram"
-                  className="w-12 h-12 cursor-pointer"
+                  className="w-20 h-20 cursor-pointer"
                 />
               </a>
             </div>
@@ -59,20 +57,20 @@ export default function Carousel() {
             <div className="absolute bottom-20 center flex items-center space-x-1">
               <a href="https://www.jotanunes.com" target="_blank" rel="noopener noreferrer">
                 <img
-                  src="/imagens/img_web.png"
+                  src="/imagens/img_net.png"
                   alt="Website"
-                  className="w-12 h-12 cursor-pointer"
+                  className="w-13 h-13 cursor-pointer"
                 />
               </a>
             </div>
             
-            {/* Rodapé 2 com ícone + link */}
-            <div className="absolute bottom-20 center flex items-center space-x-1">
-              <a href="https://www.jotanunes.com" target="_blank" rel="noopener noreferrer">
+            {/* Rodapé 3 com ícone + link */}
+            <div className="absolute bottom-19 right-20 flex items-center space-x-1">
+              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
                 <img
-                  src="/imagens/img_web.png"
-                  alt="Website"
-                  className="w-12 h-12 cursor-pointer"
+                  src="/imagens/img_linkedln.png"
+                  alt="LinkedIn"
+                  className="w-14 h-14 cursor-pointer"
                 />
               </a>
             </div>
