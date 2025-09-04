@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // <-- CORRETO
 
 // Importa carrossel dinamicamente (evita SSR)
 const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
@@ -11,21 +12,30 @@ const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
 
 export default function LoginPage() {
   const [isLogged, setIsLogged] = useState(false);
+  const router = useRouter(); // <-- dentro do componente
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLogged(true);
+
+    // Se quiser só redirecionar:
+    router.push("/gestor");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
       {/* Container geral */}
-      <div className="flex w-[85%] h-screen bg-white shadow-lg overflow-hidden">  
+      <div className="flex w-[85%] h-screen bg-white shadow-lg overflow-hidden">
         {/* Login */}
         <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 border-4 border-gray-300 rounded-l-2xl">
           <div className="w-full max-w-md">
             {/* Logo */}
             <div className="flex justify-center mb-6">
-              <Image 
-                src="/imagens/logo.png" 
-                alt="Logo" 
-                width={200} 
-                height={200} 
+              <Image
+                src="/imagens/logo.png"
+                alt="Logo"
+                width={200}
+                height={200}
                 className="object-contain"
               />
             </div>
@@ -37,13 +47,7 @@ export default function LoginPage() {
             </p>
 
             {/* Formulário */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setIsLogged(true);
-              }}
-              className="space-y-4"
-            >
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="w-80 center mx-auto">
                 <label className="block text-gray-700 mb-1">Email</label>
                 <input
@@ -66,7 +70,7 @@ export default function LoginPage() {
               {/* Botão */}
               <button
                 type="submit"
-                className="w-80 mx-auto block bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex justify-center items-center gap-2"
+                className="w-80 mx-auto bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition flex justify-center items-center gap-2"
               >
                 Entrar →
               </button>

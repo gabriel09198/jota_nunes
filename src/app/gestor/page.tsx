@@ -4,10 +4,11 @@ import { Controller } from "react-hook-form";
 import { useCasaForm, CasaForm } from "@/hooks/validations/useCasaForm";
 import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType } from "docx";
 import { saveAs } from "file-saver";
+import Image from "next/image";
 
 // --- Opções ---
 const TiposPiso = [
-  { value: "ceramica", label: "Cerâmica" },
+  { value: "ceramica", label: "Cerbosta cuâmica" },
   { value: "porcelanato", label: "Porcelanato" },
   { value: "madeira", label: "Madeira" },
   { value: "laminado", label: "Laminado" },
@@ -178,7 +179,19 @@ export default function GestorPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-10 bg-white rounded-xl shadow-lg">
-      <h1 className="text-4xl font-bold text-red-700 mb-10 text-center">
+
+      <div>
+        <div className="flex justify-center mb-6">
+          <Image
+            src="/imagens/logo.png"
+            alt="Logo"
+            width={200}
+            height={200}
+            className="object-contain"
+          />
+        </div>
+      </div>
+      <h1 className="text-3xl font-bold text-red-700 mb-10 text-center pt-3">
         Cadastro de Imóvel
       </h1>
 
@@ -245,5 +258,70 @@ export default function GestorPage() {
         </div>
       </form>
     </div>
+
+
+
+
+
+
+// //"use client";
+
+// import { useState } from "react";
+// import { Combobox } from "@headlessui/react";
+
+// const countries = ["Brasil", "Portugal", "Angola", "Moçambique"];
+
+// export default function CountrySelect() {
+//   const [query, setQuery] = useState<string | null>(null);
+
+//   const filtered =
+//     !query || query === ""
+//       ? countries
+//       : countries.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
+
+//   return (
+//     <div className="w-64">
+//       <Combobox value={query} onChange={setQuery}>
+//         <div className="relative">
+//           {/* Input */}
+//           <Combobox.Input
+//             displayValue={(v: string | null) => v ?? ""}
+//             onChange={(e) => setQuery(e.target.value)}
+//             placeholder="Digite ou selecione..."
+//             className="w-full rounded border p-2 bg-white"
+//             autoComplete="off"
+//           />
+
+//           {/* Botão para abrir o dropdown */}
+//           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
+//             ▼
+//           </Combobox.Button>
+
+//           {/* Lista de opções */}
+//           <Combobox.Options className="absolute z-10 mt-1 w-full rounded border bg-white shadow-lg max-h-60 overflow-auto">
+//             {filtered.length === 0 && query !== "" ? (
+//               <div className="p-2 text-gray-500">Nenhum resultado</div>
+//             ) : (
+//               filtered.map((c) => (
+//                 <Combobox.Option
+//                   key={c}
+//                   value={c}
+//                   className={({ active }) =>
+//                     `p-2 cursor-pointer ${
+//                       active ? "bg-gray-200 text-black" : "text-gray-700"
+//                     }`
+//                   }
+//                 >
+//                   {c}
+//                 </Combobox.Option>
+//               ))
+//             )}
+//           </Combobox.Options>
+//         </div>
+//       </Combobox>
+//     </div>
+//   );
+// }
+
   );
 }

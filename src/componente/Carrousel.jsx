@@ -43,12 +43,12 @@ export default function Carousel() {
             <p className="text-base text-gray-100">{slide.text}</p>
 
             {/* Rodapé com ícone + link */}
-            <div className="absolute bottom-17 left-20 flex items-center space-x-1">
+            <div className="absolute bottom-20 left-20 flex items-center space-x-1">
               <a href="https://instagram.com/jotanunesconstrutora" target="_blank" rel="noopener noreferrer">
                 <img
                   src="/imagens/img_insta.png"
                   alt="Instagram"
-                  className="w-20 h-20 cursor-pointer"
+                  className="w-9 h-9 cursor-pointer"
                 />
               </a>
             </div>
@@ -59,18 +59,18 @@ export default function Carousel() {
                 <img
                   src="/imagens/img_net.png"
                   alt="Website"
-                  className="w-13 h-13 cursor-pointer"
+                  className="w-8 h-8 cursor-pointer"
                 />
               </a>
             </div>
             
             {/* Rodapé 3 com ícone + link */}
-            <div className="absolute bottom-19 right-20 flex items-center space-x-1">
+            <div className="absolute bottom-20 right-20 flex items-center space-x-1">
               <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
                 <img
                   src="/imagens/img_linkedln.png"
                   alt="LinkedIn"
-                  className="w-14 h-14 cursor-pointer"
+                  className="w-9 h-9 cursor-pointer"
                 />
               </a>
             </div>
