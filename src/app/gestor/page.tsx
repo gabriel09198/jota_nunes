@@ -1,327 +1,77 @@
 "use client";
 
-import { Controller } from "react-hook-form";
-import { useCasaForm, CasaForm } from "@/hooks/validations/useCasaForm";
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType } from "docx";
-import { saveAs } from "file-saver";
-import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FilePlus, Upload, User, Settings } from "lucide-react";
 
-// --- Opções ---
-const TiposPiso = [
-  { value: "ceramica", label: "Cerbosta cuâmica" },
-  { value: "porcelanato", label: "Porcelanato" },
-  { value: "madeira", label: "Madeira" },
-  { value: "laminado", label: "Laminado" },
-  { value: "cimento", label: "Cimento queimado" },
+// Dados mockados de projetos
+const projetosMock = [
+  { id: 1, titulo: "Projeto Casa A", data: "10/09/2025" },
+  { id: 2, titulo: "Projeto Casa B", data: "08/09/2025" },
+  { id: 3, titulo: "Projeto Casa C", data: "05/09/2025" },
+  { id: 4, titulo: "Projeto Apartamento X", data: "02/09/2025" },
 ];
-
-const TiposTelhado = [
-  { value: "ceramica", label: "Telha Cerâmica" },
-  { value: "fibrocimento", label: "Fibrocimento" },
-  { value: "metalico", label: "Metálico" },
-  { value: "vidro", label: "Vidro" },
-];
-
-const TiposJanela = [
-  { value: "aluminio", label: "Alumínio" },
-  { value: "madeira", label: "Madeira" },
-  { value: "vidro", label: "Vidro temperado" },
-  { value: "pvc", label: "PVC" },
-];
-
-const TiposPorta = [
-  { value: "madeira", label: "Madeira" },
-  { value: "aluminio", label: "Alumínio" },
-  { value: "vidro", label: "Vidro" },
-  { value: "pvc", label: "PVC" },
-];
-
-const Garagem = [
-  { value: "nenhuma", label: "Nenhuma" },
-  { value: "coberta", label: "Coberta" },
-  { value: "descoberta", label: "Descoberta" },
-];
-
-const Paredes = [
-  { value: "tijolo", label: "Tijolo" },
-  { value: "drywall", label: "Drywall" },
-  { value: "bloco", label: "Bloco de Concreto" },
-  { value: "madeira", label: "Madeira" },
-];
-
-const Cozinha = [
-  { value: "americana", label: "Americana" },
-  { value: "planejada", label: "Planejada" },
-  { value: "simples", label: "Simples" },
-];
-
-const Banheiro = [
-  { value: "luxo", label: "Luxo" },
-  { value: "simples", label: "Simples" },
-  { value: "azulejado", label: "Azulejado" },
-];
-
-const Quarto = [
-  { value: "suite", label: "Suíte" },
-  { value: "simples", label: "Simples" },
-  { value: "duplo", label: "Duplo" },
-];
-
-const Sala = [
-  { value: "estar", label: "Sala de Estar" },
-  { value: "jantar", label: "Sala de Jantar" },
-  { value: "tv", label: "Sala de TV" },
-];
-
-const AreaExterna = [
-  { value: "churrasqueira", label: "Churrasqueira" },
-  { value: "jardim", label: "Jardim" },
-  { value: "varanda", label: "Varanda" },
-  { value: "piscina", label: "Piscina" },
-];
-
-const Acabamento = [
-  { value: "luxo", label: "Luxo" },
-  { value: "medio", label: "Médio" },
-  { value: "simples", label: "Simples" },
-];
-
-const Iluminacao = [
-  { value: "led", label: "LED" },
-  { value: "fluorescente", label: "Fluorescente" },
-  { value: "incandescente", label: "Incandescente" },
-];
-
-const EnergiaSolar = [
-  { value: "sim", label: "Sim" },
-  { value: "nao", label: "Não" },
-];
-
-const Piscina = [
-  { value: "sim", label: "Sim" },
-  { value: "nao", label: "Não" },
-];
-
-const Resina = [
-  { value: "pura", label: "Pura" },
-  { value: "aditiva", label: "Aditiva" },
-];
-
-// --- Labels bonitos para o Word ---
-const fieldLabels: Record<string, string> = {
-  piso: "Tipo de Piso",
-  telhado: "Tipo de Telhado",
-  janela: "Tipo de Janela",
-  porta: "Tipo de Porta",
-  garagem: "Garagem",
-  paredes: "Tipo de Paredes",
-  cozinha: "Tipo de Cozinha",
-  banheiro: "Banheiro",
-  quarto: "Quarto",
-  sala: "Sala",
-  areaExterna: "Área Externa",
-  acabamento: "Acabamento",
-  iluminacao: "Iluminação",
-  energiaSolar: "Energia Solar",
-  piscina: "Piscina",
-  resina: "Resina",
-};
 
 export default function GestorPage() {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useCasaForm();
+  const [projetos] = useState(projetosMock);
+  const router = useRouter();
 
-  // Função que gera o Word
-  const gerarWord = async (data: CasaForm) => {
-    const rows = Object.entries(data).map(([key, value]) =>
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 40, type: WidthType.PERCENTAGE },
-            children: [new Paragraph({ children: [new TextRun({ text: fieldLabels[key] || key, bold: true })] })],
-          }),
-          new TableCell({
-            width: { size: 60, type: WidthType.PERCENTAGE },
-            children: [new Paragraph(value ? value : "Não informado")],
-          }),
-        ],
-      })
-    );
-
-    const doc = new Document({
-      sections: [
-        {
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: "Cadastro de Imóvel", bold: true, size: 32 })],
-              spacing: { after: 300 },
-            }),
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows,
-            }),
-          ],
-        },
-      ],
-    });
-
-    const blob = await Packer.toBlob(doc);
-    saveAs(blob, "cadastro-imovel.docx");
-  };
-
-  const onSubmit = (data: CasaForm) => {
-    console.log("Dados do imóvel:", data);
-    gerarWord(data);
+  const handleNovoDocumento = () => {
+    router.push("gestor/cadastro"); // redireciona para a página de criaçao de documento
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-10 bg-white rounded-xl shadow-lg">
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-20 bg-red-700 text-white flex flex-col items-center py-6 space-y-8">
+        <button className="hover:bg-red-600 p-3 rounded-xl transition">
+          <User />
+        </button>
 
-      <div>
-        <div className="flex justify-center mb-6">
-          <Image
-            src="/imagens/logo.png"
-            alt="Logo"
-            width={200}
-            height={200}
-            className="object-contain"
-          />
-        </div>
-      </div>
-      <h1 className="text-3xl font-bold text-red-700 mb-10 text-center pt-3">
-        Cadastro de Imóvel
-      </h1>
+        <button className="hover:bg-red-600 p-3 rounded-xl transition">
+          <Settings />
+        </button>
+        
+      </aside>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-8"
-      >
-        {[
-          { name: "piso", label: "Tipo de Piso *", options: TiposPiso },
-          { name: "telhado", label: "Tipo de Telhado *", options: TiposTelhado },
-          { name: "janela", label: "Tipo de Janela *", options: TiposJanela },
-          { name: "porta", label: "Tipo de Porta *", options: TiposPorta },
-          { name: "garagem", label: "Garagem *", options: Garagem },
-          { name: "paredes", label: "Tipo de Paredes *", options: Paredes },
-          { name: "cozinha", label: "Tipo de Cozinha *", options: Cozinha },
-          { name: "banheiro", label: "Banheiro *", options: Banheiro },
-          { name: "quarto", label: "Quarto *", options: Quarto },
-          { name: "sala", label: "Sala *", options: Sala },
-          { name: "areaExterna", label: "Área Externa *", options: AreaExterna },
-          { name: "acabamento", label: "Acabamento *", options: Acabamento },
-          { name: "iluminacao", label: "Iluminação *", options: Iluminacao },
-          { name: "energiaSolar", label: "Energia Solar *", options: EnergiaSolar },
-          { name: "piscina", label: "Piscina *", options: Piscina },
-          { name: "resina", label: "Resina *", options: Resina },
-        ].map(({ name, label, options }) => (
-          <div key={name}>
-            <Controller
-              name={name as keyof CasaForm}
-              control={control}
-              render={({ field }) => (
-                <div>
-                  <label className="block text-lg text-gray-800 font-semibold mb-2">
-                    {label}
-                  </label>
-                  <select
-                    {...field}
-                    className="w-full border border-gray-400 rounded-xl p-4 text-lg bg-white text-gray-900 shadow-md focus:ring-4 focus:ring-red-500 focus:border-red-500"
-                  >
-                    <option value="">Selecione</option>
-                    {options.map((opt) => (
-                      <option key={opt.value} value={opt.label}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors[name as keyof CasaForm] && (
-                    <p className="text-red-600 text-sm mt-2">
-                      {errors[name as keyof CasaForm]?.message as string}
-                    </p>
-                  )}
-                </div>
-              )}
-            />
+      {/* Dashboard */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        {/* Header com botões */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={handleNovoDocumento}
+              className="bg-red-700 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2"
+            >
+              <FilePlus className="w-5 h-5" />
+              Novo Documento
+            </button>
+            <button className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2">
+              <Upload className="w-5 h-5" />
+              Importar
+            </button>
           </div>
-        ))}
-
-        <div className="sm:col-span-2">
-          <button
-            type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white text-xl font-bold px-8 py-4 rounded-xl shadow-lg transition"
-          >
-            Salvar Imóvel
-          </button>
         </div>
-      </form>
+
+        {/* Histórico de projetos */}
+        <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+          Histórico de Projetos
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projetos.map((projeto) => (
+            <div
+              key={projeto.id}
+              className="bg-white rounded-xl shadow-md hover:shadow-xl transition p-6 cursor-pointer"
+            >
+              <h3 className="text-xl font-semibold text-gray-800">
+                {projeto.titulo}
+              </h3>
+              <p className="text-gray-600 mt-2">Data: {projeto.data}</p>
+            </div>
+          ))}
+        </div>
+      </main>
     </div>
-
-
-
-
-
-
-// //"use client";
-
-// import { useState } from "react";
-// import { Combobox } from "@headlessui/react";
-
-// const countries = ["Brasil", "Portugal", "Angola", "Moçambique"];
-
-// export default function CountrySelect() {
-//   const [query, setQuery] = useState<string | null>(null);
-
-//   const filtered =
-//     !query || query === ""
-//       ? countries
-//       : countries.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
-
-//   return (
-//     <div className="w-64">
-//       <Combobox value={query} onChange={setQuery}>
-//         <div className="relative">
-//           {/* Input */}
-//           <Combobox.Input
-//             displayValue={(v: string | null) => v ?? ""}
-//             onChange={(e) => setQuery(e.target.value)}
-//             placeholder="Digite ou selecione..."
-//             className="w-full rounded border p-2 bg-white"
-//             autoComplete="off"
-//           />
-
-//           {/* Botão para abrir o dropdown */}
-//           <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
-//             ▼
-//           </Combobox.Button>
-
-//           {/* Lista de opções */}
-//           <Combobox.Options className="absolute z-10 mt-1 w-full rounded border bg-white shadow-lg max-h-60 overflow-auto">
-//             {filtered.length === 0 && query !== "" ? (
-//               <div className="p-2 text-gray-500">Nenhum resultado</div>
-//             ) : (
-//               filtered.map((c) => (
-//                 <Combobox.Option
-//                   key={c}
-//                   value={c}
-//                   className={({ active }) =>
-//                     `p-2 cursor-pointer ${
-//                       active ? "bg-gray-200 text-black" : "text-gray-700"
-//                     }`
-//                   }
-//                 >
-//                   {c}
-//                 </Combobox.Option>
-//               ))
-//             )}
-//           </Combobox.Options>
-//         </div>
-//       </Combobox>
-//     </div>
-//   );
-// }
-
   );
 }
