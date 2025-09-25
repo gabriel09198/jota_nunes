@@ -42,12 +42,12 @@ export default function GestorPage() {
           <div className="flex gap-4">
             <button
               onClick={handleNovoDocumento}
-              className="bg-red-700 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2"
+              className="bg-red-700 hover:bg-red-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 cursor-pointer shadow-md hover:shadow-xl transition p-6 "
             >
               <FilePlus className="w-5 h-5" />
               Novo Documento
             </button>
-            <button className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2">
+            <button className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 cursor-pointer shadow-md hover:shadow-xl transition p-6 ">
               <Upload className="w-5 h-5" />
               Importar
             </button>
