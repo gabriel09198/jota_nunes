@@ -2,13 +2,24 @@
 
 import { Controller } from "react-hook-form";
 import { useCasaForm, CasaForm } from "@/hooks/validations/useCasaForm";
-import { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType } from "docx";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableRow,
+  TableCell,
+  TextRun,
+  WidthType,
+} from "docx";
 import { saveAs } from "file-saver";
 import Image from "next/image";
+import { useState } from "react";
+import CreatableSelect from "react-select/creatable";
 
 // --- Opções ---
 const TiposPiso = [
-  { value: "ceramica", label: "Cerbosta cuâmica" },
+  { value: "ceramica", label: "Cerâmica" },
   { value: "porcelanato", label: "Porcelanato" },
   { value: "madeira", label: "Madeira" },
   { value: "laminado", label: "Laminado" },
@@ -125,6 +136,27 @@ const fieldLabels: Record<string, string> = {
   energiaSolar: "Energia Solar",
   piscina: "Piscina",
   resina: "Resina",
+  extras: "Características Extras",
+};
+
+// --- Agrupamento de categorias ---
+const categorias: Record<string, { value: string; label: string }[]> = {
+  piso: TiposPiso,
+  telhado: TiposTelhado,
+  janela: TiposJanela,
+  porta: TiposPorta,
+  garagem: Garagem,
+  paredes: Paredes,
+  cozinha: Cozinha,
+  banheiro: Banheiro,
+  quarto: Quarto,
+  sala: Sala,
+  areaExterna: AreaExterna,
+  acabamento: Acabamento,
+  iluminacao: Iluminacao,
+  energiaSolar: EnergiaSolar,
+  piscina: Piscina,
+  resina: Resina,
 };
 
 export default function GestorPage() {
@@ -134,6 +166,9 @@ export default function GestorPage() {
     formState: { errors },
   } = useCasaForm();
 
+  // Categoria escolhida para adicionar opções
+  const [selectedCategoria, setSelectedCategoria] = useState<string>("piso");
+
   // Função que gera o Word
   const gerarWord = async (data: CasaForm) => {
     const rows = Object.entries(data).map(([key, value]) =>
@@ -141,11 +176,25 @@ export default function GestorPage() {
         children: [
           new TableCell({
             width: { size: 40, type: WidthType.PERCENTAGE },
-            children: [new Paragraph({ children: [new TextRun({ text: fieldLabels[key] || key, bold: true })] })],
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: fieldLabels[key] || key, bold: true }),
+                ],
+              }),
+            ],
           }),
           new TableCell({
             width: { size: 60, type: WidthType.PERCENTAGE },
-            children: [new Paragraph(value ? value : "Não informado")],
+            children: [
+              new Paragraph(
+                Array.isArray(value)
+                  ? value.join(", ")
+                  : value
+                  ? value
+                  : "Não informado"
+              ),
+            ],
           }),
         ],
       })
@@ -156,7 +205,13 @@ export default function GestorPage() {
         {
           children: [
             new Paragraph({
-              children: [new TextRun({ text: "Cadastro de Imóvel", bold: true, size: 32 })],
+              children: [
+                new TextRun({
+                  text: "Cadastro de Imóvel",
+                  bold: true,
+                  size: 32,
+                }),
+              ],
               spacing: { after: 300 },
             }),
             new Table({
@@ -179,7 +234,6 @@ export default function GestorPage() {
 
   return (
     <div className="max-w-6xl mx-auto p-10 bg-white rounded-xl shadow-lg">
-
       <div>
         <div className="flex justify-center mb-6">
           <Image
@@ -199,24 +253,7 @@ export default function GestorPage() {
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 sm:grid-cols-2 gap-8"
       >
-        {[
-          { name: "piso", label: "Tipo de Piso *", options: TiposPiso },
-          { name: "telhado", label: "Tipo de Telhado *", options: TiposTelhado },
-          { name: "janela", label: "Tipo de Janela *", options: TiposJanela },
-          { name: "porta", label: "Tipo de Porta *", options: TiposPorta },
-          { name: "garagem", label: "Garagem *", options: Garagem },
-          { name: "paredes", label: "Tipo de Paredes *", options: Paredes },
-          { name: "cozinha", label: "Tipo de Cozinha *", options: Cozinha },
-          { name: "banheiro", label: "Banheiro *", options: Banheiro },
-          { name: "quarto", label: "Quarto *", options: Quarto },
-          { name: "sala", label: "Sala *", options: Sala },
-          { name: "areaExterna", label: "Área Externa *", options: AreaExterna },
-          { name: "acabamento", label: "Acabamento *", options: Acabamento },
-          { name: "iluminacao", label: "Iluminação *", options: Iluminacao },
-          { name: "energiaSolar", label: "Energia Solar *", options: EnergiaSolar },
-          { name: "piscina", label: "Piscina *", options: Piscina },
-          { name: "resina", label: "Resina *", options: Resina },
-        ].map(({ name, label, options }) => (
+        {Object.entries(categorias).map(([name, options]) => (
           <div key={name}>
             <Controller
               name={name as keyof CasaForm}
@@ -224,7 +261,7 @@ export default function GestorPage() {
               render={({ field }) => (
                 <div>
                   <label className="block text-lg text-gray-800 font-semibold mb-2">
-                    {label}
+                    {fieldLabels[name] || name} *
                   </label>
                   <select
                     {...field}
@@ -247,6 +284,25 @@ export default function GestorPage() {
             />
           </div>
         ))}
+        
+        <div className="sm:col-span-2">
+          <label className="block text-lg text-gray-800 font-semibold mb-2">
+            Adicionar Item na Categoria Selecionada
+          </label>
+          <CreatableSelect
+            isClearable
+            onCreateOption={(inputValue) => {
+              const newOption = {
+                value: inputValue.toLowerCase().replace(/\s+/g, "_"),
+                label: inputValue,
+              };
+              categorias[selectedCategoria].push(newOption); // adiciona na constante escolhida
+            }}
+            options={categorias[selectedCategoria]}
+            placeholder="Digite e pressione Enter para criar..."
+            className="text-gray-900"
+          />
+        </div>
 
         <div className="sm:col-span-2">
           <button

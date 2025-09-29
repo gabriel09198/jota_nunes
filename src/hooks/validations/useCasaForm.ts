@@ -19,6 +19,8 @@ export const CasaSchema = z.object({
   iluminacao: z.string().min(1, "Selecione o tipo de iluminação"),
   energiaSolar: z.string().min(1, "Informe se possui energia solar"),
   piscina: z.string().min(1, "Informe se possui piscina"),
+  resina: z.string().optional(), // já tinha no outro arquivo
+  extras: z.array(z.string()).optional(), // <-- novo campo
 });
 
 // --- Tipo do formulário ---
@@ -44,6 +46,8 @@ export function useCasaForm() {
       iluminacao: "",
       energiaSolar: "",
       piscina: "",
+      resina: "",
+      extras: [], // <-- valor inicial
     },
   });
 }
