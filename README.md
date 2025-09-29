@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 Jota Nunes – Plataforma de Gestão de Imóveis
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-13-blue?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue?logo=typescript)
+![Vercel](https://img.shields.io/badge/Deploy%20on-Vercel-black?logo=vercel)
 
-First, run the development server:
+Este é um projeto de aplicação web moderna, construída com **Next.js 13** e **TypeScript**, focada na gestão de imóveis. Desenvolvido com a estrutura `create-next-app`, o projeto oferece uma base sólida para aplicações escaláveis e de alto desempenho.
+
+---
+
+## 🚀 Tecnologias Utilizadas
+
+* **Next.js 13**: Framework React para renderização do lado do servidor (SSR) e geração de sites estáticos (SSG).
+* **TypeScript**: Superset do JavaScript que adiciona tipagem estática, melhorando a manutenção e escalabilidade do código.
+* **React 18**: Biblioteca para construção de interfaces de usuário.
+* **Tailwind CSS** (opcional): Framework CSS utilitário para design rápido e responsivo.
+* **Vercel**: Plataforma de deploy otimizada para aplicações Next.js.
+
+---
+
+## 📦 Instalação
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/gabriel09198/jota_nunes.git
+cd jota_nunes
+```
+
+Instale as dependências:
+
+```bash
+npm install
+# ou
+yarn
+# ou
+pnpm install
+# ou
+bun install
+```
+
+---
+
+## 💻 Desenvolvimento
+
+Para rodar o servidor de desenvolvimento:
 
 ```bash
 npm run dev
-# or
+# ou
 yarn dev
-# or
+# ou
 pnpm dev
-# or
+# ou
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000) no navegador para visualizar a aplicação. As alterações nos arquivos serão refletidas automaticamente.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚡ Build para Produção
 
-## Learn More
+Para gerar a versão otimizada para produção:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run build
+# ou
+yarn build
+# ou
+pnpm build
+# ou
+bun build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Para rodar a versão de produção localmente:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm start
+# ou
+yarn start
+# ou
+pnpm start
+# ou
+bun start
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🌐 Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O deploy pode ser realizado facilmente na plataforma **Vercel**, que detecta automaticamente projetos Next.js:
+
+1. Acesse [Vercel](https://vercel.com/new).
+2. Conecte seu repositório GitHub.
+3. Clique em **Deploy** e aguarde a conclusão.
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+├── app/
+│   ├── page.tsx       # Página principal
+│   ├── layout.tsx     # Layout global
+│   └── globals.css    # Estilos globais
+├── public/            # Imagens e assets públicos
+├── src/               # Código-fonte
+│   ├── components/    # Componentes reutilizáveis
+│   └── styles/        # Estilos adicionais
+├── .gitignore
+├── README.md
+├── package.json
+├── tsconfig.json
+└── next.config.ts
+```
+
+---
+
+## ✨ Funcionalidades Futuras
+
+* Cadastro e listagem de imóveis
+* Filtros avançados e busca dinâmica
+* Autenticação de usuários
+* Integração com APIs externas (ex.: Google Maps)
+* Suporte a PWA (Progressive Web App)
+
+---
+
+## 📚 Recursos e Documentação
+
+* [Next.js Documentation](https://nextjs.org/docs)
+* [Learn Next.js](https://nextjs.org/learn)
+* [Vercel](https://vercel.com/docs)
+* [Tailwind CSS](https://tailwindcss.com/docs)
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Para colaborar:
+
+1. Faça um fork do repositório
+2. Crie uma branch (`git checkout -b feature/nova-funcionalidade`)
+3. Faça commits (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Envie para o seu fork (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+---
+
+Feito por **Gabriel**
