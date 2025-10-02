@@ -17,7 +17,7 @@ export default function GestorPage() {
   const router = useRouter();
 
   const handleNovoDocumento = () => {
-    router.push("gestor/cadastro"); // redireciona para a página de criaçao de documento
+    router.push("engenheiro"); // redireciona para a página de criaçao de documento
   };
 
   return (
