@@ -41,40 +41,6 @@ export default function Carousel() {
 
             <h2 className="text-2xl font-bold mb-2">{slide.title}</h2>
             <p className="text-base text-gray-100">{slide.text}</p>
-
-            {/* Rodapé com ícone + link */}
-            <div className="absolute bottom-20 left-20 flex items-center space-x-1">
-              <a href="https://instagram.com/jotanunesconstrutora" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="/imagens/img_insta.png"
-                  alt="Instagram"
-                  className="w-9 h-9 cursor-pointer"
-                />
-              </a>
-            </div>
-
-            {/* Rodapé 2 com ícone + link */}
-            <div className="absolute bottom-20 center flex items-center space-x-1">
-              <a href="https://www.jotanunes.com" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="/imagens/img_net.png"
-                  alt="Website"
-                  className="w-8 h-8 cursor-pointer"
-                />
-              </a>
-            </div>
-            
-            {/* Rodapé 3 com ícone + link */}
-            <div className="absolute bottom-20 right-20 flex items-center space-x-1">
-              <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="/imagens/img_linkedln.png"
-                  alt="LinkedIn"
-                  className="w-9 h-9 cursor-pointer"
-                />
-              </a>
-            </div>
-
             
           </div>
         </SwiperSlide>
