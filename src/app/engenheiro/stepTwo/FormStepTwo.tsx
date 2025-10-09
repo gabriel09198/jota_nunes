@@ -9,7 +9,7 @@ import { useEffect } from "react";
 
 const errorMessage = "Este campo é obrigatório";
 
-// ✅ Validação com Zod
+// Validação com Zod
 const CasaFormSchema = z
   .object({
     salaDeEstar: z.boolean(),
@@ -37,7 +37,7 @@ const CasaFormSchema = z
 
 type CasaForm = z.infer<typeof CasaFormSchema>;
 
-// ✅ Tipos para ambientes com e sem options
+// Tipos para ambientes
 type AmbienteBase = {
   name: keyof CasaForm;
   label: string;
@@ -49,7 +49,7 @@ type AmbienteComOptions = AmbienteBase & {
 
 type Ambiente = AmbienteBase | AmbienteComOptions;
 
-// ✅ Lista de ambientes
+// Lista de ambientes
 const ambientes: Ambiente[] = [
   { name: "salaDeEstar", label: "Sala de Estar" },
   { name: "cozinha", label: "Cozinha" },
@@ -88,7 +88,6 @@ interface FormFieldProps {
   quantidadeQuartosValue: string | undefined;
 }
 
-// ✅ Corrigido: checagem segura de "options" com operador "in"
 const FormField = ({ ambiente, control, errors, quantidadeQuartosValue }: FormFieldProps) => (
   <Controller
     name={ambiente.name as keyof CasaForm}
@@ -149,7 +148,12 @@ const FormField = ({ ambiente, control, errors, quantidadeQuartosValue }: FormFi
                   type="number"
                   min={4}
                   placeholder="Qual a quantidade?"
-                  onChange={(e) => specificField.onChange(parseInt(e.target.value, 10))}
+                  {...specificField}
+                  // ✅ CORRIGIDO: Evita `NaN` quando o campo está vazio.
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    specificField.onChange(value === "" ? undefined : parseInt(value, 10));
+                  }}
                   value={specificField.value ?? ""}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
                 />
@@ -193,14 +197,24 @@ export default function StepTwoPage() {
 
   const quantidadeQuartosValue = watch("quantidadeQuartos");
 
+  // ✅ MELHORADO: Limpa o campo específico se outra opção for selecionada.
   useEffect(() => {
-    if (quantidadeQuartosValue === "mais" && !getValues("quantidadeQuartosEspecifica")) {
-      setValue("quantidadeQuartosEspecifica", 4, { shouldValidate: true });
+    if (quantidadeQuartosValue === "mais") {
+      if (!getValues("quantidadeQuartosEspecifica")) {
+        setValue("quantidadeQuartosEspecifica", 4, { shouldValidate: true });
+      }
+    } else {
+      if (getValues("quantidadeQuartosEspecifica") !== undefined) {
+        setValue("quantidadeQuartosEspecifica", undefined, { shouldValidate: true });
+      }
     }
   }, [quantidadeQuartosValue, setValue, getValues]);
 
   const onSubmit = (data: CasaForm) => {
-    if (data.quantidadeQuartos !== "mais") data.quantidadeQuartosEspecifica = undefined;
+    // Limpa o valor específico se "mais" não estiver selecionado (redundância segura)
+    if (data.quantidadeQuartos !== "mais") {
+      data.quantidadeQuartosEspecifica = undefined;
+    }
     console.log("Dados do Formulário:", data);
     router.push("/engenheiro/stepThree");
   };
