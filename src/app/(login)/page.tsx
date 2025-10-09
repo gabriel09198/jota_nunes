@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // <-- CORRETO
+import { useRouter } from "next/navigation";
 
 // Importa carrossel dinamicamente (evita SSR)
 const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
@@ -11,20 +10,16 @@ const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
 });
 
 export default function LoginPage() {
-  const [isLogged, setIsLogged] = useState(false);
-  const router = useRouter(); // <-- dentro do componente
+  const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLogged(true);
-
-    // Se quiser só redirecionar:
+    // Redireciona para a página do gestor
     router.push("/gestor");
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      {/* Container geral */}
       <div className="flex w-[85%] h-screen bg-white shadow-lg overflow-hidden">
         {/* Login */}
         <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 border-4 border-gray-300 rounded-l-2xl">
@@ -58,7 +53,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="w-80 center mx-auto">
-                <label className="block text-black mb-1 text-left ">Senha</label>
+                <label className="block text-black mb-1 text-left">Senha</label>
                 <input
                   type="password"
                   className="w-80 border mx-auto block text-black text-left rounded-lg px-2 py-2 focus:border-red-500 focus:outline-none"

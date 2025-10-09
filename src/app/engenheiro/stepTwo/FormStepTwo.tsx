@@ -9,6 +9,7 @@ import { useEffect } from "react";
 
 const errorMessage = "Este campo é obrigatório";
 
+// ✅ Validação com Zod
 const CasaFormSchema = z
   .object({
     salaDeEstar: z.boolean(),
@@ -36,7 +37,20 @@ const CasaFormSchema = z
 
 type CasaForm = z.infer<typeof CasaFormSchema>;
 
-const ambientes = [
+// ✅ Tipos para ambientes com e sem options
+type AmbienteBase = {
+  name: keyof CasaForm;
+  label: string;
+};
+
+type AmbienteComOptions = AmbienteBase & {
+  options: { value: string; label: string }[];
+};
+
+type Ambiente = AmbienteBase | AmbienteComOptions;
+
+// ✅ Lista de ambientes
+const ambientes: Ambiente[] = [
   { name: "salaDeEstar", label: "Sala de Estar" },
   { name: "cozinha", label: "Cozinha" },
   {
@@ -55,7 +69,7 @@ const ambientes = [
   { name: "garagem", label: "Garagem" },
   { name: "areaExterna", label: "Área Externa / Quintal" },
   { name: "piscina", label: "Piscina" },
-] as const;
+];
 
 const CheckIcon = () => (
   <svg className="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -68,19 +82,20 @@ const CheckIcon = () => (
 );
 
 interface FormFieldProps {
-  ambiente: (typeof ambientes)[number];
+  ambiente: Ambiente;
   control: Control<CasaForm>;
   errors: FieldErrors<CasaForm>;
   quantidadeQuartosValue: string | undefined;
 }
 
+// ✅ Corrigido: checagem segura de "options" com operador "in"
 const FormField = ({ ambiente, control, errors, quantidadeQuartosValue }: FormFieldProps) => (
   <Controller
     name={ambiente.name as keyof CasaForm}
     control={control}
     render={({ field }) => (
       <div className="h-fit">
-        {ambiente.options ? (
+        {"options" in ambiente ? (
           <div>
             <label className="block text-lg text-gray-700 font-semibold mb-2">
               {ambiente.label} <span className="text-red-500">*</span>
@@ -206,6 +221,7 @@ export default function StepTwoPage() {
             className="mx-auto"
           />
         </div>
+
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="mb-8">
             <div className="flex justify-between mb-1">
@@ -235,6 +251,7 @@ export default function StepTwoPage() {
                   />
                 ))}
               </div>
+
               <div className="flex-1 space-y-6">
                 {rightColumnItems.map((ambiente) => (
                   <FormField
