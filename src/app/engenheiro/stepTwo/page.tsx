@@ -102,7 +102,7 @@ export default function StepTwoPage() {
     const router = useRouter();
     const { control, handleSubmit, watch, setValue, getValues, formState: { errors } } = useForm<CasaForm>({
         resolver: zodResolver(CasaFormSchema),
-        defaultValues: { salaDeEstar: false, cozinha: false, suite: false, banheiroSocial: false, garagem: false, areaExterna: false, piscina: false, quantidadeQuartos: "" as any },
+        defaultValues: { salaDeEstar: false, cozinha: false, suite: false, banheiroSocial: false, garagem: false, areaExterna: false, piscina: false, quantidadeQuartos: "" as CasaForm["quantidadeQuartos"], },
     });
 
     const quantidadeQuartosValue = watch("quantidadeQuartos");
