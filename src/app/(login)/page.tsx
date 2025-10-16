@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import axios from "axios";
 
 // Importa carrossel dinamicamente (evita SSR)
 const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
@@ -12,9 +14,31 @@ const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
 export default function LoginPage() {
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/gestor");
+    setError(null);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/authentication/token/",
+        {
+          username,
+          password,
+        }
+      );
+
+      const { access } = response.data;
+
+      localStorage.setItem("access_token", access);
+
+      router.push("/gestor");
+    } catch (err: any) {
+      setError("Usuário ou senha inválidos");
+    }
   };
 
   return (
@@ -45,13 +69,15 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
               <div>
                 <label className="block text-gray-700 mb-1 text-sm sm:text-base">
-                  Email
+                  Usuário
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   className="w-full border border-gray-300 text-black rounded-lg px-4 py-2 focus:border-red-500 focus:outline-none"
-                  placeholder="Digite seu email"
+                  placeholder="Digite seu usuário"
                   required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                 />
               </div>
               <div>
@@ -63,8 +89,14 @@ export default function LoginPage() {
                   className="w-full border border-gray-300 text-black rounded-lg px-4 py-2 focus:border-red-500 focus:outline-none"
                   placeholder="Digite sua senha"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+
+              {error && (
+                <p className="text-red-600 text-center text-sm">{error}</p>
+              )}
 
               <button
                 type="submit"
