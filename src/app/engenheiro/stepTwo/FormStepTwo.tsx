@@ -224,7 +224,7 @@ export default function StepTwoPage() {
   const rightColumnItems = ambientes.slice(half);
 
   return (
-    <div className="bg-gradient-to-b from-red-400 to-red-900 min-h-screen">
+    <div className="bg-gradient-to-b from-white-0 to-red-0 min-h-screen">
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="text-center mb-8">
           <Image

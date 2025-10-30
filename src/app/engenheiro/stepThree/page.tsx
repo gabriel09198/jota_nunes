@@ -5,27 +5,28 @@ import { useCasaForm, CasaForm } from "@/hooks/validations/useCasaForm";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// --- Opções ---
-const campos = [
-  { name: "piso", label: "Tipo de Piso *", options: ["Cerâmica", "Porcelanato", "Madeira"] },
-  { name: "telhado", label: "Tipo de Telhado *", options: ["Colonial", "Fibrocimento", "Laje"] },
-  { name: "janela", label: "Tipo de Janela *", options: ["Vidro", "Alumínio", "Madeira"] },
-  { name: "porta", label: "Tipo de Porta *", options: ["Madeira", "Metal", "PVC"] },
-  { name: "garagem", label: "Garagem *", options: ["Sim", "Não"] },
-  { name: "paredes", label: "Tipo de Paredes *", options: ["Tijolo", "Drywall"] },
-  { name: "cozinha", label: "Tipo de Cozinha *", options: ["Planejada", "Convencional"] },
-  { name: "banheiro", label: "Banheiro *", options: ["Azulejo", "Porcelanato"] },
-  { name: "quarto", label: "Quarto *", options: ["Com suíte", "Sem suíte"] },
-  { name: "sala", label: "Sala *", options: ["Integrada", "Separada"] },
-  { name: "areaExterna", label: "Área Externa *", options: ["Churrasqueira", "Jardim"] },
-  { name: "acabamento", label: "Acabamento *", options: ["Simples", "Luxo"] },
-  { name: "iluminacao", label: "Iluminação *", options: ["Natural", "Artificial"] },
-  { name: "energiaSolar", label: "Energia Solar *", options: ["Sim", "Não"] },
-  { name: "piscina", label: "Piscina *", options: ["Sim", "Não"] },
-  { name: "resina", label: "Resina *", options: ["Sim", "Não"] },
+// ==================== CAMPOS ====================
+const unidadesPrivativas = [
+  {
+    titulo: "1.2 Sala de Estar / Jantar",
+    campos: [
+      { name: "piso_sala", label: "Piso", options: ["Porcelanato", "Laminado"] },
+      { name: "parede_sala", label: "Parede", options: ["Pintura PVA látex branco sobre gesso ou massa de regularização PVA"] },
+      { name: "teto_sala", label: "Teto", options: ["Pintura PVA látex branco sobre gesso ou massa de regularização PVA"] },
+      { name: "rodape_sala", label: "Rodapé", options: ["Porcelanato", "Laminado (h=5cm)"] },
+      { name: "soleira_sala", label: "Soleira", options: ["Mármore", "Granito"] },
+      { name: "peitoril_sala", label: "Peitoril", options: ["Metálico"] },
+      { name: "esquadria_sala", label: "Esquadria", options: ["Alumínio pintado de branco"] },
+      { name: "vidro_sala", label: "Vidro", options: ["Liso incolor"] },
+      { name: "porta_sala", label: "Porta", options: ["Semi–ôca comum pintada com esmalte sintético"] },
+      { name: "ferragem_sala", label: "Ferragem", options: ["Acabamento cromado"] },
+      { name: "instalacaoEletrica_sala", label: "Instalação Elétrica", options: ["Pontos de luz no teto, tomadas e interruptores"] },
+      { name: "instalacaoComunic_sala", label: "Instalação de Comunicação", options: ["Pontos secos de comunicação e antena de TV"] },
+    ],
+  },
 ];
 
-export default function GestorPage() {
+export default function CadastroImovel() {
   const {
     control,
     handleSubmit,
@@ -57,47 +58,59 @@ export default function GestorPage() {
         </div>
 
         {/* Título */}
-        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-10 tracking-tight">
+        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-4 tracking-tight">
           Cadastro de Imóvel
         </h1>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-8"
-        >
-          {campos.map(({ name, label, options }) => (
-            <div
-              key={name}
-              className="bg-gray-50 border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition"
-            >
-              <Controller
-                name={name as keyof CasaForm}
-                control={control}
-                render={({ field }) => (
-                  <div>
-                    <label className="block text-lg text-gray-800 font-semibold mb-2">
-                      {label}
-                    </label>
-                    <select
-                      {...field}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none"
-                    >
-                      <option value="">Selecione uma opção</option>
-                      {options.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
+        {/* Seção principal */}
+        <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-4 border-b pb-2">
+          🏠 UNIDADES PRIVATIVAS
+        </h2>
 
-                    {errors[name as keyof CasaForm] && (
-                      <p className="text-red-600 text-sm mt-2">
-                        {errors[name as keyof CasaForm]?.message as string}
-                      </p>
-                    )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+          {unidadesPrivativas.map((secao) => (
+            <div key={secao.titulo}>
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                {secao.titulo}
+              </h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                {secao.campos.map(({ name, label, options }) => (
+                  <div
+                    key={name}
+                    className="bg-gray-50 border border-gray-200 p-5 rounded-xl shadow-sm hover:shadow-md transition"
+                  >
+                    <Controller
+                      name={name as keyof CasaForm}
+                      control={control}
+                      render={({ field }) => (
+                        <div>
+                          <label className="block text-lg text-gray-800 font-semibold mb-2">
+                            {label}
+                          </label>
+                          <select
+                            {...field}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-600 focus:border-red-600 outline-none"
+                          >
+                            <option value="">Selecione uma opção</option>
+                            {options.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+
+                          {errors[name as keyof CasaForm] && (
+                            <p className="text-red-600 text-sm mt-2">
+                              {errors[name as keyof CasaForm]?.message as string}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    />
                   </div>
-                )}
-              />
+                ))}
+              </div>
             </div>
           ))}
 
