@@ -1,4 +1,3 @@
-// CadastroImovel.tsx
 "use client";
 
 import React from "react";
@@ -536,7 +535,7 @@ export default function CadastroImovel() {
           <Image src="/imagens/logo.png" alt="Logo" width={160} height={160} className="object-contain" />
         </div>
 
-        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-4 tracking-tight">Cadastro de Imóvel</h1>
+        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-4 tracking-tight">Cadastro de Obra</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
           {secoes.map((secao) => (
