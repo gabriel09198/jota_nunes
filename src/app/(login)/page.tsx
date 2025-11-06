@@ -4,8 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import axios from "axios";
-import api from "@/services/api";
+
 import { login } from "@/services/auth";
 
 // Importa carrossel dinamicamente (evita SSR)
@@ -33,8 +32,11 @@ export default function LoginPage() {
       localStorage.setItem("access_token", access);
 
       router.push("/gestor");
-    } catch (err: any) {
+    } catch (error: unknown) {
       setError("Usuário ou senha inválidos");
+      if (error instanceof Error) {
+        console.error(error.message);
+      }
     }
   };
 

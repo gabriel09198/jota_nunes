@@ -49,16 +49,14 @@ export default function GestorPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getConstructions();
-
-        const mapped = data.map((c: Construction) => ({
+        const data: Construction[] = await getConstructions();
+        const mapped: Projeto[] = data.map((c) => ({
           id: c.id,
           titulo: c.project_name,
           location: c.location,
           status: c.is_active ? "pendente" : "reprovado",
           observacao: c.description,
         }));
-
         setProjetos(mapped);
       } catch (error) {
         console.error("Erro ao buscar construções:", error);

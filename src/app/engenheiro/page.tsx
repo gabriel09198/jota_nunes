@@ -1,19 +1,18 @@
 // src/App.js
-import React from 'react';
-import Header from '../../componente/Header';
-import Card from '../../componente/Card';
+import React from "react";
+import Card from "../../componente/Card";
 
 const App = () => {
   const cardData = [
-    { name: 'Pérolas do mar', link: '/stepOne' },
-    { name: 'Por do sol', link: '/stepOne' },
-    { name: 'Solar das águas', link: '/stepOne' },
-    { name: 'Alta vista', link: '/stepOne' },
-    { name: 'Marbello', link: '/stepOne' },
-    { name: 'Vida bela', link: '/stepOne' },
-    { name: 'Park Barra', link: '/stepOne' },
-    { name: 'Rio barra', link: '/stepOne' },
-    { name: 'Novo Paraíso', link: '/stepOne' },
+    { name: "Pérolas do mar", link: "/stepOne" },
+    { name: "Por do sol", link: "/stepOne" },
+    { name: "Solar das águas", link: "/stepOne" },
+    { name: "Alta vista", link: "/stepOne" },
+    { name: "Marbello", link: "/stepOne" },
+    { name: "Vida bela", link: "/stepOne" },
+    { name: "Park Barra", link: "/stepOne" },
+    { name: "Rio barra", link: "/stepOne" },
+    { name: "Novo Paraíso", link: "/stepOne" },
   ];
 
   return (
@@ -33,7 +32,6 @@ const App = () => {
       {/* Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mt-8">
         {cardData.map((card, index) => (
-
           <Card key={index} name={card.name} link={card.link} />
         ))}
       </div>

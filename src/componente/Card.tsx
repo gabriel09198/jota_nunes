@@ -6,7 +6,7 @@ interface CardProps {
   link: string;
 }
 
-const Card: React.FC<CardProps> = ({ name, link }) => {
+const Card: React.FC<CardProps> = ({ name }) => {
   const lines = name.split("\n");
 
   return (
