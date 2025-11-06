@@ -1,7 +1,7 @@
 import api from "./api";
 
 interface LoginResponse {
-  acess: string;
+  access: string;
   refresh: string;
 }
 

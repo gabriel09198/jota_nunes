@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import axios from "axios";
+import api from "@/services/api";
+import { login } from "@/services/auth";
 
 // Importa carrossel dinamicamente (evita SSR)
 const SwiperComponent = dynamic(() => import("../../componente/Carrousel"), {
@@ -23,15 +25,10 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/authentication/token/",
-        {
-          username,
-          password,
-        }
-      );
+      const data = await login(username, password);
+      console.log("Tokens:", data);
 
-      const { access } = response.data;
+      const { access } = data;
 
       localStorage.setItem("access_token", access);
 
