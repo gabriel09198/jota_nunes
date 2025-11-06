@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getConstructions } from "@/services/constructions";
+import type { Construction } from "@/app/types/construction";
 import {
   FilePlus,
   Upload,
@@ -17,24 +19,54 @@ import {
 type Projeto = {
   id: number;
   titulo: string;
-  data: string;
+  location: string;
   status: "pendente" | "aprovado" | "reprovado";
   observacao?: string;
 };
 
-const projetosMock: Projeto[] = [
-  { id: 1, titulo: "Projeto Casa A", data: "10/09/2025", status: "pendente" },
-  { id: 2, titulo: "Projeto Casa B", data: "08/09/2025", status: "pendente" },
-  { id: 3, titulo: "Projeto Casa C", data: "05/09/2025", status: "pendente" },
-  { id: 4, titulo: "Projeto Apartamento X", data: "02/09/2025", status: "pendente" },
-];
+// const projetosMock: Projeto[] = [
+//   { id: 1, titulo: "Projeto Casa A", data: "10/09/2025", status: "pendente" },
+//   { id: 2, titulo: "Projeto Casa B", data: "08/09/2025", status: "pendente" },
+//   { id: 3, titulo: "Projeto Casa C", data: "05/09/2025", status: "pendente" },
+//   {
+//     id: 4,
+//     titulo: "Projeto Apartamento X",
+//     data: "02/09/2025",
+//     status: "pendente",
+//   },
+// ];
 
 export default function GestorPage() {
-  const [projetos, setProjetos] = useState<Projeto[]>(projetosMock);
+  const [projetos, setProjetos] = useState<Projeto[]>([]);
+
   const [menuAberto, setMenuAberto] = useState(false);
-  const [projetoSelecionado, setProjetoSelecionado] = useState<Projeto | null>(null);
+  const [projetoSelecionado, setProjetoSelecionado] = useState<Projeto | null>(
+    null
+  );
   const [textoObs, setTextoObs] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getConstructions();
+
+        const mapped = data.map((c: Construction) => ({
+          id: c.id,
+          titulo: c.project_name,
+          location: c.location,
+          status: c.is_active ? "pendente" : "reprovado",
+          observacao: c.description,
+        }));
+
+        setProjetos(mapped);
+      } catch (error) {
+        console.error("Erro ao buscar construções:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleNovoDocumento = () => {
     router.push("engenheiro");
@@ -55,7 +87,9 @@ export default function GestorPage() {
     if (!projetoSelecionado) return;
     setProjetos((prev) =>
       prev.map((proj) =>
-        proj.id === projetoSelecionado.id ? { ...proj, observacao: textoObs } : proj
+        proj.id === projetoSelecionado.id
+          ? { ...proj, observacao: textoObs }
+          : proj
       )
     );
     setProjetoSelecionado(null);
@@ -144,7 +178,7 @@ export default function GestorPage() {
                   {projeto.titulo}
                 </h3>
                 <p className="text-gray-600 mt-2 text-sm sm:text-base">
-                  Data: {projeto.data}
+                  Obs: {projeto.observacao}
                 </p>
 
                 {projeto.observacao && (
@@ -196,7 +230,9 @@ export default function GestorPage() {
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                     {projeto.titulo}
                   </h3>
-                  <p className="text-gray-600 mt-2 text-sm">Data: {projeto.data}</p>
+                  <p className="text-gray-600 mt-2 text-sm">
+                    observacao: {projeto.observacao}
+                  </p>
                   <p className="text-green-700 font-semibold mt-3 text-sm">
                     ✔ Projeto aprovado
                   </p>
@@ -227,7 +263,9 @@ export default function GestorPage() {
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                     {projeto.titulo}
                   </h3>
-                  <p className="text-gray-600 mt-2 text-sm">Data: {projeto.data}</p>
+                  <p className="text-gray-600 mt-2 text-sm">
+                    Data: {projeto.observacao}
+                  </p>
                   <p className="text-red-700 font-semibold mt-3 text-sm">
                     ✖ Projeto reprovado
                   </p>
