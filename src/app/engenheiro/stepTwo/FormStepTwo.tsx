@@ -46,6 +46,8 @@ const formSections = secoes.map((secao) => ({
 }));
 
 const allFieldNames = formSections.flatMap((s) => s.ambientes.map((a) => a.name));
+const fieldToLabelMap = Object.fromEntries(formSections.flatMap(s => s.ambientes.map(a => [a.name, a.label])));
+
 const dynamicBooleans = Object.fromEntries(allFieldNames.map((n) => [n, z.boolean()])) as Record<string, z.ZodBoolean>;
 
 const CasaFormSchema = z.object({
@@ -117,11 +119,24 @@ export default function StepTwoPage() {
   const quartoChecked = watch("quartoESuite");
   const sanitarioChecked = watch("sanitarioLavabo");
 
-  useEffect(() => setValue("quartoESuiteQuantidade", quartoChecked ? getValues("quartoESuiteQuantidade") || 1 : undefined), [quartoChecked]);
-  useEffect(() => setValue("sanitarioLavaboQuantidade", sanitarioChecked ? getValues("sanitarioLavaboQuantidade") || 1 : undefined), [sanitarioChecked]);
+  useEffect(() => setValue("quartoESuiteQuantidade", quartoChecked ? getValues("quartoESuiteQuantidade") || 1 : undefined), [quartoChecked, setValue, getValues]);
+  useEffect(() => setValue("sanitarioLavaboQuantidade", sanitarioChecked ? getValues("sanitarioLavaboQuantidade") || 1 : undefined), [sanitarioChecked, setValue, getValues]);
 
   const onSubmit = (data: CasaForm) => {
-    console.log("Dados do formulário:", data);
+    const selectedFields = Object.keys(data).filter(key => 
+      allFieldNames.includes(key) && data[key as keyof CasaForm]
+    );
+
+    const selectedRoomLabels = selectedFields.map(fieldKey => fieldToLabelMap[fieldKey]);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("selectedRooms", JSON.stringify(selectedRoomLabels));
+    }
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("formStepTwoData", JSON.stringify(data));
+    }
+
     router.push("/engenheiro/stepThree");
   };
 

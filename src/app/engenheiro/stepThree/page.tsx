@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -14,7 +14,23 @@ import {
   AlignmentType,
 } from "docx";
 
-const secoes = [
+interface Campo {
+  name: string;
+  label: string;
+  options: string[];
+}
+
+interface Subtitulo {
+  nome: string;
+  campos: Campo[];
+}
+
+interface Secao {
+  titulo: string;
+  subtitulos: Subtitulo[];
+}
+
+const ALL_SECOES: Secao[] = [
   {
     titulo: "UNIDADES PRIVATIVAS",
     subtitulos: [
@@ -452,15 +468,35 @@ const secoes = [
   },
 ];
 
-// -------------------- Componente principal --------------------
 export default function CadastroImovel() {
   const { control, handleSubmit, getValues } = useForm({ mode: "onSubmit" });
 
-  // Gera o documento Word (.docx) com título e seções
+  const [selectedRoomNames, setSelectedRoomNames] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedRooms = localStorage.getItem("selectedRooms");
+      if (storedRooms) {
+        try {
+          const rooms: string[] = JSON.parse(storedRooms);
+          setSelectedRoomNames(rooms);
+        } catch (e) {
+          console.error("Erro ao parsear selectedRooms do localStorage", e);
+        }
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const filteredSecoes = ALL_SECOES.map((secao) => ({
+    ...secao,
+    subtitulos: secao.subtitulos.filter(sub => selectedRoomNames.includes(sub.nome)),
+  })).filter(secao => secao.subtitulos.length > 0);
+
   const gerarWord = async (dados: any) => {
     const children: Paragraph[] = [];
 
-    // Título principal
     children.push(
       new Paragraph({
         children: [
@@ -476,8 +512,7 @@ export default function CadastroImovel() {
       })
     );
 
-    // Para cada seção e subtítulo, adiciona parágrafos
-    secoes.forEach((secao) => {
+    filteredSecoes.forEach((secao) => {
       children.push(
         new Paragraph({
           children: [new TextRun({ text: secao.titulo, bold: true, size: 26 })],
@@ -521,6 +556,14 @@ export default function CadastroImovel() {
   const onSubmit = (data: any) => {
     gerarWord(data);
   };
+  
+  if (isLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+            <p className="text-xl text-gray-500">Carregando ambientes selecionados...</p>
+        </div>
+      );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-10">
@@ -530,15 +573,14 @@ export default function CadastroImovel() {
         transition={{ duration: 0.5 }}
         className="max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl p-10 border border-gray-100"
       >
-        {/* Logo */}
         <div className="flex justify-center mb-6">
           <Image src="/imagens/logo.png" alt="Logo" width={160} height={160} className="object-contain" />
         </div>
 
-        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-4 tracking-tight">Cadastro de Obra</h1>
+        <h1 className="text-4xl font-extrabold text-center text-red-700 mb-4 tracking-tight">Personalização da Obra (Passo 3)</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-          {secoes.map((secao) => (
+          {filteredSecoes.map((secao) => (
             <div key={secao.titulo}>
               <h2 className="text-2xl font-bold text-gray-800 mt-10 mb-4 border-b pb-2">{secao.titulo}</h2>
 
@@ -577,6 +619,12 @@ export default function CadastroImovel() {
               ))}
             </div>
           ))}
+
+          {filteredSecoes.length === 0 && (
+            <p className="text-center text-xl text-red-500 mt-10">
+                Nenhum ambiente foi selecionado no Passo 2. Por favor, volte e selecione os ambientes.
+            </p>
+          )}
 
           <div className="mt-6">
             <motion.button
