@@ -1405,8 +1405,7 @@ const ALL_SECOES: Secao[] = [
 ];
 
 export default function CadastroImovel() {
-  const { control, handleSubmit } = useForm({ mode: "onSubmit" });
-
+  const { control, handleSubmit } = useForm<Record<string, string>>({ mode: "onSubmit" });
   const [selectedRoomNames, setSelectedRoomNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -1432,7 +1431,7 @@ export default function CadastroImovel() {
     ),
   })).filter((secao) => secao.subtitulos.length > 0);
 
-  const gerarWord = async (dados: any) => {
+  const gerarWord = async (dados: Record<string, string>): Promise<void> => {
     const children: Paragraph[] = [];
 
     children.push(
@@ -1493,7 +1492,7 @@ export default function CadastroImovel() {
     saveAs(blob, "Memorial_Descritivo_Imovel.docx");
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: Record<string, string>) => {
     gerarWord(data);
   };
 
