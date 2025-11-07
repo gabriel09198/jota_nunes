@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 
@@ -6,7 +8,7 @@ interface CardProps {
   link: string;
 }
 
-const Card: React.FC<CardProps> = ({ name }) => {
+const Card: React.FC<CardProps> = ({ name, link }) => {
   const lines = name.split("\n");
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, Control, Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Image from "next/image";
@@ -87,6 +87,7 @@ const formSections = secoes.map((secao) => ({
 const allFieldNames = formSections.flatMap((s) =>
   s.ambientes.map((a) => a.name)
 );
+
 const fieldToLabelMap = Object.fromEntries(
   formSections.flatMap((s) => s.ambientes.map((a) => [a.name, a.label]))
 );
@@ -103,7 +104,7 @@ const CasaFormSchema = z.object({
   sanitarioLavaboQuantidade: z.number().optional(),
 });
 
-type CasaForm = z.infer<typeof CasaFormSchema>;
+export type CasaForm = z.infer<typeof CasaFormSchema>;
 
 const defaultValues: CasaForm = {
   ...Object.fromEntries(allFieldNames.map((n) => [n, false])),
@@ -111,13 +112,27 @@ const defaultValues: CasaForm = {
   sanitarioLavabo: false,
 };
 
-const FormField = ({
+/* TIPOS */
+interface Ambiente {
+  label: string;
+  name: string; // string porque muitos nomes são gerados dinamicamente
+}
+
+interface FormFieldProps {
+  ambiente: Ambiente;
+  control: Control<CasaForm>;
+  quartoChecked: boolean;
+  sanitarioChecked: boolean;
+}
+
+/* COMPONENTE FormField SEM any e sem param 'label' não usado */
+const FormField: React.FC<FormFieldProps> = ({
   ambiente,
   control,
   quartoChecked,
   sanitarioChecked,
-}: any) => {
-  const renderQuantity = (name: keyof CasaForm, label: string) => (
+}) => {
+  const renderQuantity = (name: Path<CasaForm>) => (
     <div className="mt-4">
       <label className="block text-gray-700 font-medium mb-1">
         Informe a Quantidade:
@@ -128,12 +143,10 @@ const FormField = ({
         render={({ field }) => (
           <input
             type="number"
-            min="1"
-            value={field.value ?? ""}
+            min={1}
+            value={typeof field.value === "number" ? field.value : ""}
             onChange={(e) =>
-              field.onChange(
-                e.target.value ? parseInt(e.target.value) : undefined
-              )
+              field.onChange(e.target.value ? parseInt(e.target.value, 10) : undefined)
             }
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 placeholder-gray-400"
           />
@@ -144,7 +157,8 @@ const FormField = ({
 
   return (
     <Controller
-      name={ambiente.name as keyof CasaForm}
+      // usamos Path<CasaForm> no cast para evitar 'any'
+      name={ambiente.name as Path<CasaForm>}
       control={control}
       render={({ field }) => (
         <div>
@@ -167,18 +181,21 @@ const FormField = ({
               </div>
             </div>
           </label>
+
           {ambiente.name === "quartoESuite" &&
             quartoChecked &&
-            renderQuantity("quartoESuiteQuantidade", "Quarto e Suíte")}
+            renderQuantity("quartoESuiteQuantidade" as Path<CasaForm>)}
+
           {ambiente.name === "sanitarioLavabo" &&
             sanitarioChecked &&
-            renderQuantity("sanitarioLavaboQuantidade", "Sanitário/ Lavabo")}
+            renderQuantity("sanitarioLavaboQuantidade" as Path<CasaForm>)}
         </div>
       )}
     />
   );
 };
 
+/* PAGINA PRINCIPAL */
 export default function StepTwoPage() {
   const router = useRouter();
   const { control, handleSubmit, watch, setValue, getValues } =
@@ -190,24 +207,21 @@ export default function StepTwoPage() {
   const quartoChecked = watch("quartoESuite");
   const sanitarioChecked = watch("sanitarioLavabo");
 
-  useEffect(
-    () =>
-      setValue(
-        "quartoESuiteQuantidade",
-        quartoChecked ? getValues("quartoESuiteQuantidade") || 1 : undefined
-      ),
-    [quartoChecked, setValue, getValues]
-  );
-  useEffect(
-    () =>
-      setValue(
-        "sanitarioLavaboQuantidade",
-        sanitarioChecked
-          ? getValues("sanitarioLavaboQuantidade") || 1
-          : undefined
-      ),
-    [sanitarioChecked, setValue, getValues]
-  );
+  useEffect(() => {
+    setValue(
+      "quartoESuiteQuantidade",
+      quartoChecked ? getValues("quartoESuiteQuantidade") || 1 : undefined
+    );
+  }, [quartoChecked, setValue, getValues]);
+
+  useEffect(() => {
+    setValue(
+      "sanitarioLavaboQuantidade",
+      sanitarioChecked
+        ? getValues("sanitarioLavaboQuantidade") || 1
+        : undefined
+    );
+  }, [sanitarioChecked, setValue, getValues]);
 
   const onSubmit = (data: CasaForm) => {
     const selectedFields = Object.keys(data).filter(
@@ -220,9 +234,6 @@ export default function StepTwoPage() {
 
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedRooms", JSON.stringify(selectedRoomLabels));
-    }
-
-    if (typeof window !== "undefined") {
       localStorage.setItem("formStepTwoData", JSON.stringify(data));
     }
 
@@ -253,6 +264,7 @@ export default function StepTwoPage() {
               <div className="bg-red-600 h-2.5 rounded-full w-[50%]" />
             </div>
           </div>
+
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-gray-800">
               Ambientes da Obra
