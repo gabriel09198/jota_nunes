@@ -20,25 +20,26 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  e.preventDefault();
+  setError(null);
 
-    try {
-      const data = await login(username, password);
-      console.log("Tokens:", data);
+  try {
+    const data = await login(username, password);
+    console.log("Tokens recebidos:", data);
 
-      const { access } = data;
+    const { access, refresh } = data;
+    if (!access || !refresh) throw new Error("Tokens inválidos do servidor");
 
-      localStorage.setItem("access_token", access);
+    localStorage.setItem("token", access);
+    localStorage.setItem("refresh", refresh);
 
-      router.push("/home");
-    } catch (error: unknown) {
-      setError("Usuário ou senha inválidos");
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  };
+    router.push("/home");
+  } catch (error) {
+    console.error("Erro no login:", error);
+    setError("Usuário ou senha inválidos");
+  }
+};
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
