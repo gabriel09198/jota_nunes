@@ -31,7 +31,7 @@ export default function LoginPage() {
 
       localStorage.setItem("access_token", access);
 
-      router.push("/gestor");
+      router.push("/home");
     } catch (error: unknown) {
       setError("Usuário ou senha inválidos");
       if (error instanceof Error) {
