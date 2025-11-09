@@ -11,12 +11,6 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
-    const refresh = localStorage.getItem("refresh_token");
-    if (refresh) {
-      config.headers["X-Refresh-Token"] = refresh;
-    }
-
     return config;
   },
   (error) => Promise.reject(error)
@@ -32,27 +26,24 @@ api.interceptors.response.use(
 
       const refreshToken = localStorage.getItem("refresh_token");
       if (!refreshToken) {
-        console.warn("Refresh token ausente — redirecionando para login");
-        window.location.href = "/login";
+        window.location.href = "/";
         return Promise.reject(error);
       }
 
       try {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || "https://obraspecapi.onrender.com"}/token/refresh/`,
+          "https://obraspecapi.onrender.com/api/token/refresh/",
           { refresh: refreshToken }
         );
 
         const newAccessToken = response.data.access;
         localStorage.setItem("access_token", newAccessToken);
-
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        console.error("Erro ao renovar o token:", refreshError);
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        window.location.href = "/login";
+        window.location.href = "/";
         return Promise.reject(refreshError);
       }
     }

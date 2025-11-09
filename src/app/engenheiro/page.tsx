@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const cardData: CardData[] = [
     {
       name: "Pérolas do mar",
-      link: "/engenheiro/steptwo/FormStepTwo", /* nao estou conseguindo achar a rota para quando clicar no ir para a pag, ele abrir o form do step two*/
+      link: "/engenheiro/stepTwo", 
       description: "Aqui você encontrará informações sobre os produtos Pérolas do Mar, com detalhes e instruções."
     },
   ];

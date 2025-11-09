@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getConstructions } from "@/services/constructions";
-import type { Construction } from "@/app/types/construction";
+import type { Construction } from "@/app/types/construction"; 
 import {
   FilePlus,
-  Upload,
   User,
   Settings,
   Menu,
@@ -16,31 +15,15 @@ import {
   X,
 } from "lucide-react";
 
-type Projeto = {
-  id: number;
-  titulo: string;
-  location: string;
+type ProjetoComStatus = Construction & {
   status: "pendente" | "aprovado" | "reprovado";
-  observacao?: string;
 };
 
-// const projetosMock: Projeto[] = [
-//   { id: 1, titulo: "Projeto Casa A", data: "10/09/2025", status: "pendente" },
-//   { id: 2, titulo: "Projeto Casa B", data: "08/09/2025", status: "pendente" },
-//   { id: 3, titulo: "Projeto Casa C", data: "05/09/2025", status: "pendente" },
-//   {
-//     id: 4,
-//     titulo: "Projeto Apartamento X",
-//     data: "02/09/2025",
-//     status: "pendente",
-//   },
-// ];
-
 export default function GestorPage() {
-  const [projetos, setProjetos] = useState<Projeto[]>([]);
 
+  const [projetos, setProjetos] = useState<ProjetoComStatus[]>([]);
   const [menuAberto, setMenuAberto] = useState(false);
-  const [projetoSelecionado, setProjetoSelecionado] = useState<Projeto | null>(
+  const [projetoSelecionado, setProjetoSelecionado] = useState<ProjetoComStatus | null>(
     null
   );
   const [textoObs, setTextoObs] = useState("");
@@ -50,13 +33,12 @@ export default function GestorPage() {
     const fetchData = async () => {
       try {
         const data: Construction[] = await getConstructions();
-        const mapped: Projeto[] = data.map((c) => ({
-          id: c.id,
-          titulo: c.project_name,
-          location: c.location,
+        
+        const mapped: ProjetoComStatus[] = data.map((c) => ({
+          ...c, 
           status: c.is_active ? "pendente" : "reprovado",
-          observacao: c.description,
         }));
+
         setProjetos(mapped);
       } catch (error) {
         console.error("Erro ao buscar construções:", error);
@@ -76,9 +58,9 @@ export default function GestorPage() {
     );
   };
 
-  const handleAbrirObservacao = (projeto: Projeto) => {
+  const handleAbrirObservacao = (projeto: ProjetoComStatus) => {
     setProjetoSelecionado(projeto);
-    setTextoObs(projeto.observacao || "");
+    setTextoObs((projeto.observations && projeto.observations.join("\n")) || "");
   };
 
   const handleSalvarObservacao = () => {
@@ -86,7 +68,7 @@ export default function GestorPage() {
     setProjetos((prev) =>
       prev.map((proj) =>
         proj.id === projetoSelecionado.id
-          ? { ...proj, observacao: textoObs }
+          ? { ...proj, observations: textoObs.split("\n").filter(Boolean) }
           : proj
       )
     );
@@ -94,7 +76,6 @@ export default function GestorPage() {
     setTextoObs("");
   };
 
-  // Separar projetos por status
   const pendentes = projetos.filter((p) => p.status === "pendente");
   const aprovados = projetos.filter((p) => p.status === "aprovado");
   const reprovados = projetos.filter((p) => p.status === "reprovado");
@@ -147,10 +128,6 @@ export default function GestorPage() {
               <FilePlus className="w-5 h-5" />
               Novo Documento
             </button>
-            <button className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition">
-              <Upload className="w-5 h-5" />
-              Importar
-            </button>
           </div>
         </div>
 
@@ -173,15 +150,16 @@ export default function GestorPage() {
               >
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-red-600" />
-                  {projeto.titulo}
+                  {projeto.project_name}
                 </h3>
+         
                 <p className="text-gray-600 mt-2 text-sm sm:text-base">
-                  Obs: {projeto.observacao}
+                  Obs: {projeto.observations?.join(", ") || "Nenhuma"}
                 </p>
 
-                {projeto.observacao && (
+                {projeto.description && (
                   <p className="mt-3 text-gray-700 text-sm italic border-t pt-2">
-                    “{projeto.observacao}”
+                    “{projeto.description}”
                   </p>
                 )}
 
@@ -226,17 +204,17 @@ export default function GestorPage() {
                   className="bg-white rounded-xl shadow-md border border-green-200 p-6 cursor-pointer hover:shadow-lg transition"
                 >
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    {projeto.titulo}
+                    {projeto.project_name}
                   </h3>
                   <p className="text-gray-600 mt-2 text-sm">
-                    observacao: {projeto.observacao}
+                    Local: {projeto.location}
                   </p>
                   <p className="text-green-700 font-semibold mt-3 text-sm">
                     ✔ Projeto aprovado
                   </p>
-                  {projeto.observacao && (
+                  {projeto.observations && projeto.observations.length > 0 && (
                     <p className="mt-2 text-gray-700 italic text-sm border-t pt-2">
-                      “{projeto.observacao}”
+                      “{projeto.observations.join(", ")}”
                     </p>
                   )}
                 </div>
@@ -259,17 +237,17 @@ export default function GestorPage() {
                   className="bg-white rounded-xl shadow-md border border-red-200 p-6 cursor-pointer hover:shadow-lg transition"
                 >
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
-                    {projeto.titulo}
+                    {projeto.project_name}
                   </h3>
                   <p className="text-gray-600 mt-2 text-sm">
-                    Data: {projeto.observacao}
+                    Local: {projeto.location}
                   </p>
                   <p className="text-red-700 font-semibold mt-3 text-sm">
                     ✖ Projeto reprovado
                   </p>
-                  {projeto.observacao && (
+                  {projeto.observations && projeto.observations.length > 0 && (
                     <p className="mt-2 text-gray-700 italic text-sm border-t pt-2">
-                      “{projeto.observacao}”
+                      “{projeto.observations.join(", ")}”
                     </p>
                   )}
                 </div>
@@ -290,7 +268,7 @@ export default function GestorPage() {
               <X className="w-6 h-6" />
             </button>
             <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-              Observações — {projetoSelecionado.titulo}
+              Observações — {projetoSelecionado.project_name}
             </h3>
             <textarea
               value={textoObs}

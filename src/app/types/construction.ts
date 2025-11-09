@@ -4,6 +4,6 @@ export interface Construction {
   location: string;
   description: string;
   referentials: number[];
-  observations: number[];
+  observations: string[];
   is_active: boolean;
 }
