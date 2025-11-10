@@ -1,45 +1,26 @@
 "use client";
 
-import Image from "next/image";
-import Card from "../../componente/Card";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Info } from "lucide-react";
 import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
 import { getStandardModels } from "@/services/standartModelService";
 import { StandardModel } from "@/app/types/standartModels";
 
-interface CardData {
-  id: number | string;
-  name: string;
-  link: string;
-  points?: string;
-  obs?: string;
-}
-
-const App: React.FC = () => {
-  const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
-  const [showNoteModal, setShowNoteModal] = useState(false);
-  const [modelName, setModelName] = useState("");
-  const [importantPoints, setImportantPoints] = useState("");
-  const [observations, setObservations] = useState("");
-  const [models, setModels] = useState<CardData[]>([]);
-  const [customCards, setCustomCards] = useState<CardData[]>([]);
+const ModeloPadrao: React.FC = () => {
+  const [models, setModels] = useState<StandardModel[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedModel, setSelectedModel] = useState<StandardModel | null>(null);
   const isAuthChecked = useAuthGuard();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isAuthChecked) return;
 
     const fetchData = async () => {
       try {
-        const data: StandardModel[] = await getStandardModels();
-
-        const parsed: CardData[] = data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          link: `/engenheiro/stepTwo?model=${item.id}`,
-        }));
-
-        setModels(parsed);
+        const data = await getStandardModels();
+        setModels(data);
       } catch (error) {
         console.error("Erro ao buscar modelos padrão:", error);
       }
@@ -48,181 +29,119 @@ const App: React.FC = () => {
     fetchData();
   }, [isAuthChecked]);
 
-  if (!isAuthChecked) {
-    return <div className="p-8">Carregando...</div>;
-  }
+  if (!isAuthChecked)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-600">
+        Carregando...
+      </div>
+    );
 
-  // monta os 6 cards fixos
-  const combinedCards: CardData[] = [
-    { id: "new", name: "+", link: "#" },
-    ...customCards,
-    ...models,
-  ];
-
-  while (combinedCards.length < 6) {
-    combinedCards.push({ id: `empty-${combinedCards.length}`, name: "", link: "#" });
-  }
-
-  const handleSaveCard = () => {
-    if (!modelName.trim()) {
-      alert("Por favor, insira um nome para o novo modelo.");
-      return;
-    }
-
-    const newCard: CardData = {
-      id: Date.now(),
-      name: modelName.trim(),
-      link: "/engenheiro/stepTwo?new=true",
-      points: importantPoints,
-      obs: observations,
-    };
-
-    setCustomCards((prev) => [newCard, ...prev]);
-    setShowNoteModal(false);
-    setModelName("");
-    setImportantPoints("");
-    setObservations("");
-  };
+  const filteredModels = models.filter((model) =>
+    model.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8 relative overflow-hidden">
-      {/* Header */}
-      <header className="bg-red-500 text-white shadow-md rounded-md p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <Image
-            src="/imagens/logo_branca.png"
-            alt="Logo Jotanunes"
-            width={120}
-            height={32}
-            priority
-            className="h-8 w-auto"
-          />
-        </div>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Cabeçalho */}
+      <header className="flex items-center gap-3 bg-red-700 text-white px-4 py-3 shadow-md">
+        <button
+          onClick={() => router.back()}
+          className="p-2 rounded-lg hover:bg-red-600 transition"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="font-semibold text-lg">Modelos Padrão</h1>
       </header>
 
+      {/* Conteúdo */}
+      <main className="flex flex-col items-center justify-start flex-1 p-10">
+        <h2 className="text-lg font-semibold text-gray-800 mb-6">
+          Selecione um modelo existente
+        </h2>
 
+        {/* Barra de busca + botão */}
+        <div className="flex flex-row items-center justify-center gap-4 w-full max-w-6xl mb-10">
+          <input
+            type="text"
+            placeholder="Buscar modelo..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-[750px] p-3 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:outline-none bg-white"
+          />
 
-      {/* Cards */}
-      <div
-        className={`grid grid-cols-2 sm:grid-cols-3 gap-8 mt-8 transition duration-300 ${
-          showNoteModal ? "blur-sm brightness-90" : ""
-        }`}
-      >
-        {combinedCards.map((card) => (
-          <div
-            key={card.id}
-            onClick={() => {
-              if (card.name === "+") {
-                setShowNoteModal(true);
-              } else if (card.name) {
-                setSelectedCard(card);
-              }
-            }}
-            className={card.name ? "cursor-pointer" : "opacity-0 pointer-events-none"}
+          <button
+            onClick={() => router.push("/engenheiro/stepTwo?new=true")}
+            className="bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition"
           >
-            <Card
-              name={
-                card.points || card.obs
-                  ? `${card.name}\n\n${card.points ? `🧱 ${card.points}` : ""}${
-                      card.obs ? `\n📝 ${card.obs}` : ""
-                    }`
-                  : card.name || "⠀"
-              }
-            />
-          </div>
-        ))}
-      </div>
+            Criar modelo do zero
+          </button>
+        </div>
 
-      {/* Modal dos modelos existentes */}
-      {selectedCard && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black/10">
-          <div className="bg-white rounded-xl shadow-lg p-8 w-96 text-center relative">
-            <h2 className="text-xl font-semibold mb-6 text-gray-800">
-              {selectedCard.name}
-            </h2>
-
-            {selectedCard.points && (
-              <p className="text-gray-700 mb-2 text-sm whitespace-pre-line">
-                🧱 {selectedCard.points}
-              </p>
-            )}
-            {selectedCard.obs && (
-              <p className="text-gray-700 mb-6 text-sm whitespace-pre-line">
-                📝 {selectedCard.obs}
-              </p>
-            )}
-
-            <div className="flex justify-center gap-4">
-              <Link
-                href={selectedCard.link}
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+        {/* Cards */}
+        {filteredModels.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-center w-full max-w-5xl">
+            {filteredModels.map((model) => (
+              <div
+                key={model.id}
+                className="bg-white w-full p-5 rounded-xl border border-gray-200 shadow hover:shadow-lg transition cursor-pointer relative group"
               >
-                Ir para página
-              </Link>
+                {/* Ícone de info */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedModel(model);
+                  }}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-red-600 transition"
+                >
+                  <Info className="w-5 h-5" />
+                </button>
 
+                {/* Conteúdo do card */}
+                <div
+                  onClick={() =>
+                    router.push(`/engenheiro/stepTwo?model=${model.id}`)
+                  }
+                >
+                  <h3 className="text-base font-semibold text-gray-900 mb-1">
+                    {model.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Observações: {model.observations?.length || 0}
+                  </p>
+                  <span className="text-xs text-gray-500">
+                    Última edição: {model.lastEdited ?? "—"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 mt-4">Nenhum modelo encontrado.</p>
+        )}
+      </main>
+
+      {/* Modal de informações */}
+      {selectedModel && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-96 p-6 relative">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              {selectedModel.name}
+            </h3>
+            <p className="text-sm text-gray-700 mb-2">
+              <strong>Observações:</strong>{" "}
+              {selectedModel.observations || "Nenhuma observação registrada."}
+            </p>
+            <p className="text-sm text-gray-600 mb-2">
+              <strong>Última edição:</strong>{" "}
+              {selectedModel.lastEdited ?? "—"}
+            </p>
+
+            <div className="flex justify-end mt-6">
               <button
-                onClick={() => setSelectedCard(null)}
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition"
+                onClick={() => setSelectedModel(null)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
               >
                 Fechar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mini modal do card “+” */}
-      {showNoteModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-md bg-black/10">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-96 text-left relative">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">
-              Novo Modelo
-            </h2>
-
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Nome do modelo:
-            </label>
-            <input
-              type="text"
-              value={modelName}
-              onChange={(e) => setModelName(e.target.value)}
-              placeholder="Digite o nome do modelo"
-              className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
-            />
-
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Pontos importantes:
-            </label>
-            <textarea
-              value={importantPoints}
-              onChange={(e) => setImportantPoints(e.target.value)}
-              placeholder="Ex: Estrutura, elétrica, hidráulica..."
-              className="w-full border border-gray-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none h-20"
-            />
-
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Observações:
-            </label>
-            <textarea
-              value={observations}
-              onChange={(e) => setObservations(e.target.value)}
-              placeholder="Ex: Padrão de cliente, variações de layout..."
-              className="w-full border border-gray-300 rounded-md p-2 mb-6 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none h-20"
-            />
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowNoteModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 text-gray-800 transition"
-              >
-                Cancelar
-              </button>
-
-              <button
-                onClick={handleSaveCard}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-              >
-                Salvar
               </button>
             </div>
           </div>
@@ -232,4 +151,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default ModeloPadrao;
