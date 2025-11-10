@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getConstructions } from "@/services/constructions";
-import type { Construction } from "@/app/types/construction"; 
+import { getConstructions } from "@/services/constructionsService";
+import type { Construction } from "@/app/types/construction";
 import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
+import NovoDocumentoModal from "@/componente/NewDocumentTypeModal";
 
 import {
   FilePlus,
@@ -22,23 +23,22 @@ type ProjetoComStatus = Construction & {
 };
 
 export default function GestorPage() {
-
+  const [open, setOpen] = useState(false);
   const [projetos, setProjetos] = useState<ProjetoComStatus[]>([]);
   const [menuAberto, setMenuAberto] = useState(false);
-  const [projetoSelecionado, setProjetoSelecionado] = useState<ProjetoComStatus | null>(
-    null
-  );
+  const [projetoSelecionado, setProjetoSelecionado] =
+    useState<ProjetoComStatus | null>(null);
   const [textoObs, setTextoObs] = useState("");
   const router = useRouter();
-  const isAuthChecked = useAuthGuard(); 
+  const isAuthChecked = useAuthGuard();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data: Construction[] = await getConstructions();
-        
+
         const mapped: ProjetoComStatus[] = data.map((c) => ({
-          ...c, 
+          ...c,
           status: c.is_active ? "pendente" : "reprovado",
         }));
 
@@ -51,10 +51,6 @@ export default function GestorPage() {
     fetchData();
   }, []);
 
-  const handleNovoDocumento = () => {
-    router.push("engenheiro");
-  };
-
   const handleAprovacao = (id: number, status: "aprovado" | "reprovado") => {
     setProjetos((prev) =>
       prev.map((proj) => (proj.id === id ? { ...proj, status } : proj))
@@ -63,7 +59,9 @@ export default function GestorPage() {
 
   const handleAbrirObservacao = (projeto: ProjetoComStatus) => {
     setProjetoSelecionado(projeto);
-    setTextoObs((projeto.observations && projeto.observations.join("\n")) || "");
+    setTextoObs(
+      (projeto.observations && projeto.observations.join("\n")) || ""
+    );
   };
 
   const handleSalvarObservacao = () => {
@@ -84,12 +82,11 @@ export default function GestorPage() {
   const reprovados = projetos.filter((p) => p.status === "reprovado");
 
   if (!isAuthChecked) {
-    return ;
+    return;
   }
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 relative">
-      {/* Sidebar Desktop */}
       <aside className="hidden md:flex w-20 bg-red-700 text-white flex-col items-center py-6 space-y-8">
         <button className="hover:bg-red-600 p-3 rounded-xl transition">
           <User />
@@ -99,7 +96,6 @@ export default function GestorPage() {
         </button>
       </aside>
 
-      {/* Navbar Mobile */}
       <header className="md:hidden bg-red-700 text-white flex items-center justify-between px-4 py-3 shadow-md">
         <h1 className="font-semibold text-lg">Dashboard</h1>
         <button
@@ -110,7 +106,6 @@ export default function GestorPage() {
         </button>
       </header>
 
-      {/* Menu mobile dropdown */}
       {menuAberto && (
         <div className="md:hidden bg-red-600 text-white flex justify-around py-3">
           <button className="hover:bg-red-500 p-2 rounded-lg transition">
@@ -129,12 +124,13 @@ export default function GestorPage() {
           <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
           <div className="flex gap-4">
             <button
-              onClick={handleNovoDocumento}
+              onClick={() => setOpen(true)}
               className="bg-red-700 hover:bg-red-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition"
             >
               <FilePlus className="w-5 h-5" />
               Novo Documento
             </button>
+            <NovoDocumentoModal isOpen={open} onClose={() => setOpen(false)} />
           </div>
         </div>
 
@@ -159,7 +155,7 @@ export default function GestorPage() {
                   <MessageSquare className="w-5 h-5 text-red-600" />
                   {projeto.project_name}
                 </h3>
-         
+
                 <p className="text-gray-600 mt-2 text-sm sm:text-base">
                   Obs: {projeto.observations?.join(", ") || "Nenhuma"}
                 </p>
