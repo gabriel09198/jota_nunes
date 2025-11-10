@@ -125,7 +125,7 @@ export default function GestorPage() {
           <div className="flex gap-4">
             <button
               onClick={() => setOpen(true)}
-              className="bg-red-700 hover:bg-red-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition"
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transition"
             >
               <FilePlus className="w-5 h-5" />
               Novo Documento
