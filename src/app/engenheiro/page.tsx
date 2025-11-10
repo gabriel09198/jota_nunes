@@ -2,35 +2,52 @@
 
 import Image from "next/image";
 import Card from "../../componente/Card";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
+import { getStandardModels } from "@/services/standartModelService";
+import { StandardModel } from "@/app/types/standartModels";
 
 interface CardData {
+  id: number;
   name: string;
   link: string;
-  description: string;
 }
 
 const App: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
-  const isAuthChecked = useAuthGuard(); 
+  const [models, setModels] = useState<CardData[]>([]);
+  const isAuthChecked = useAuthGuard();
 
+  useEffect(() => {
+    if (!isAuthChecked) return;
+    const fetchData = async () => {
+      try {
+        const data: StandardModel[] = await getStandardModels();
+
+        const parsed: CardData[] = data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          link: `/engenheiro/stepTwo?model=${item.id}`,
+        }));
+
+        setModels(parsed);
+      } catch (error) {
+        console.error("Erro ao buscar modelos padrao:", error);
+      }
+    };
+
+    fetchData();
+  }, [isAuthChecked]);
+
+  // evita retorno antes dos hooks → agora apenas renderiza algo
   if (!isAuthChecked) {
-    return;
+    return <div className="p-8">Carregando...</div>;
   }
-  
-  const cardData: CardData[] = [
-    {
-      name: "Pérolas do mar",
-      link: "/engenheiro/stepTwo", 
-      description: "Aqui você encontrará informações sobre os produtos Pérolas do Mar, com detalhes e instruções."
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      {/* Header Jotanunes */}
+      {/* Header */}
       <header className="bg-red-500 text-white shadow-md rounded-md p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <Image
@@ -46,8 +63,12 @@ const App: React.FC = () => {
 
       {/* Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 mt-8">
-        {cardData.map((card, index) => (
-          <div key={index} onClick={() => setSelectedCard(card)}>
+        {models.map((card) => (
+          <div
+            key={card.id}
+            onClick={() => setSelectedCard(card)}
+            className="cursor-pointer"
+          >
             <Card name={card.name} />
           </div>
         ))}
@@ -57,8 +78,7 @@ const App: React.FC = () => {
       {selectedCard && (
         <div className="fixed inset-0 bg-red-600 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-8 w-96 text-center relative">
-            <h2 className="text-xl font-semibold mb-4">{selectedCard.name}</h2>
-            <p className="text-gray-600 mb-6">{selectedCard.description}</p>
+            <h2 className="text-xl font-semibold mb-6">{selectedCard.name}</h2>
 
             <div className="flex justify-center gap-4">
               <Link
@@ -67,6 +87,7 @@ const App: React.FC = () => {
               >
                 Ir para página
               </Link>
+
               <button
                 onClick={() => setSelectedCard(null)}
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"

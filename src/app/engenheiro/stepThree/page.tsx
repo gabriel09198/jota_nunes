@@ -1406,7 +1406,9 @@ const ALL_SECOES: Secao[] = [
 ];
 
 export default function CadastroImovel() {
-  const { control, handleSubmit } = useForm<Record<string, string>>({ mode: "onSubmit" });
+  const { control, handleSubmit } = useForm<Record<string, string>>({
+    mode: "onSubmit",
+  });
   const [selectedRoomNames, setSelectedRoomNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const isAuthChecked = useAuthGuard();
