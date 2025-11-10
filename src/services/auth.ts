@@ -9,7 +9,7 @@ export const login = async (
   username: string,
   password: string
 ): Promise<LoginResponse> => {
-  const response = await api.post("authentication/token/", {
+  const response = await api.post("/authentication/token/", {
     username,
     password,
   });
