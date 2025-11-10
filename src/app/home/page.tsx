@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getConstructions } from "@/services/constructions";
 import type { Construction } from "@/app/types/construction"; 
+import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
+
 import {
   FilePlus,
   User,
@@ -28,6 +30,7 @@ export default function GestorPage() {
   );
   const [textoObs, setTextoObs] = useState("");
   const router = useRouter();
+  const isAuthChecked = useAuthGuard(); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +82,10 @@ export default function GestorPage() {
   const pendentes = projetos.filter((p) => p.status === "pendente");
   const aprovados = projetos.filter((p) => p.status === "aprovado");
   const reprovados = projetos.filter((p) => p.status === "reprovado");
+
+  if (!isAuthChecked) {
+    return ;
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 relative">

@@ -6,6 +6,7 @@ import { z } from "zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
 
 const CheckIcon = () => (
   <svg className="w-4 h-4 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -203,9 +204,11 @@ export default function StepTwoPage() {
       resolver: zodResolver(CasaFormSchema),
       defaultValues,
     });
+    
 
   const quartoChecked = watch("quartoESuite");
   const sanitarioChecked = watch("sanitarioLavabo");
+  const isAuthChecked = useAuthGuard();
 
   useEffect(() => {
     setValue(
@@ -222,6 +225,10 @@ export default function StepTwoPage() {
         : undefined
     );
   }, [sanitarioChecked, setValue, getValues]);
+
+  if (!isAuthChecked) {
+    return ;
+  }
 
   const onSubmit = (data: CasaForm) => {
     const selectedFields = Object.keys(data).filter(

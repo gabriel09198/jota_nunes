@@ -18,36 +18,10 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (!refreshToken) {
-        window.location.href = "/";
-        return Promise.reject(error);
-      }
-
-      try {
-        const response = await axios.post(
-          "https://obraspecapi.onrender.com/api/token/refresh/",
-          { refresh: refreshToken }
-        );
-
-        const newAccessToken = response.data.access;
-        localStorage.setItem("access_token", newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        window.location.href = "/";
-        return Promise.reject(refreshError);
-      }
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      return Promise.reject(error);
     }
-
     return Promise.reject(error);
   }
 );

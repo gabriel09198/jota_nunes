@@ -4,6 +4,7 @@ import Image from "next/image";
 import Card from "../../componente/Card";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
 
 interface CardData {
   name: string;
@@ -13,7 +14,12 @@ interface CardData {
 
 const App: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<CardData | null>(null);
+  const isAuthChecked = useAuthGuard(); 
 
+  if (!isAuthChecked) {
+    return;
+  }
+  
   const cardData: CardData[] = [
     {
       name: "Pérolas do mar",

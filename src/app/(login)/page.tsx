@@ -18,22 +18,22 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  e.preventDefault();
+  setError(null);
 
-    try {
-      const data = await login(username, password);
-      const { access, refresh } = data;
+  try {
+    const data = await login(username, password);
+    const { access, refresh } = data;
 
-      localStorage.setItem("access_token", access);
-      localStorage.setItem("refresh_token", refresh);
+    localStorage.setItem("access_token", access);
+    localStorage.setItem("refresh_token", refresh);
 
-      router.push("/home");
-    } catch (error) {
-      console.error("Erro no login:", error);
-      setError("Usuário ou senha inválidos");
-    }
-  };
+    router.push("/home");
+  } catch (error) {
+    console.error("Erro no login:", error);
+    setError("Usuário ou senha inválidos");
+  }
+};
 
 
   return (

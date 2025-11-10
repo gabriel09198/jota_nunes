@@ -13,6 +13,7 @@ import {
   HeadingLevel,
   AlignmentType,
 } from "docx";
+import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
 
 interface Campo {
   name: string;
@@ -1408,6 +1409,7 @@ export default function CadastroImovel() {
   const { control, handleSubmit } = useForm<Record<string, string>>({ mode: "onSubmit" });
   const [selectedRoomNames, setSelectedRoomNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isAuthChecked = useAuthGuard();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -1495,6 +1497,10 @@ export default function CadastroImovel() {
   const onSubmit = (data: Record<string, string>) => {
     gerarWord(data);
   };
+
+  if (!isAuthChecked) {
+    return;
+  }
 
   if (isLoading) {
     return (
