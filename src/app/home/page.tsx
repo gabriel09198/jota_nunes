@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { getConstructions } from "@/services/constructionsService";
 import type { Construction } from "@/app/types/construction";
 import { useAuthGuard } from "@/hooks/validations/useAuthGuard";
@@ -29,7 +28,6 @@ export default function GestorPage() {
   const [projetoSelecionado, setProjetoSelecionado] =
     useState<ProjetoComStatus | null>(null);
   const [textoObs, setTextoObs] = useState("");
-  const router = useRouter();
   const isAuthChecked = useAuthGuard();
 
   useEffect(() => {
